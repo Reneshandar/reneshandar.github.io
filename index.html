@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ڕێنمایی زانکۆ و پەیمانگاکان</title>
 <meta name="theme-color" content="#0d3144">
+<meta name="description" content="ڕێنیشاندەر - ڕێنمایی زانکۆ و پەیمانگاکان لە کوردستان">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ڕێنیشاندەر">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -247,7 +255,7 @@ select option{color:#132427;background:#fff}
       </div>
       <div class="top-actions">
         <button class="profile-btn" id="openProfile" title="پڕۆفایلی من" aria-label="پڕۆفایلی من">👤</button>
-        <button class="download-btn" id="downloadSite" title="داگرتنی وێبسایت" aria-label="داگرتنی وێبسایت">⇩</button>
+        <button class="download-btn" id="downloadSite" title="دامەزراندنی ڕێنیشاندەر لەسەر مۆبایل" aria-label="دامەزراندنی ڕێنیشاندەر لەسەر مۆبایل">⇩</button>
       </div>
     </div>
   </header>
@@ -996,18 +1004,42 @@ document.getElementById("mapClose").addEventListener("click",()=>{
   document.querySelectorAll("#viewToggle button").forEach(x=>x.classList.toggle("active",x.dataset.view==="list"));
 });
 document.getElementById("fitMap").addEventListener("click",()=>{if(map)drawMarkers()});
-document.getElementById("downloadSite").addEventListener("click",()=>{
-  const html="<!DOCTYPE html>\n"+document.documentElement.outerHTML;
-  const blob=new Blob([html],{type:"text/html;charset=utf-8"});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement("a");
-  a.href=url;
-  a.download="Reneshndar.html";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  const btn = document.getElementById("downloadSite");
+  btn.style.display = "inline-flex";
+  btn.title = "دامەزراندنی ڕێنیشاندەر لەسەر مۆبایل";
 });
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  const btn = document.getElementById("downloadSite");
+  btn.style.display = "none";
+});
+
+document.getElementById("downloadSite").addEventListener("click", async () => {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    return;
+  }
+
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isIOS) {
+    alert("بۆ دامەزراندن لە iPhone/iPad:\n1) لە Safari کرتە لە نیشانەی Share بکە.\n2) Add to Home Screen هەڵبژێرە.\n3) Add بکە.");
+  } else {
+    alert("ئەگەر دوگمەی دامەزراندن لە براوزەرەکەت دەرناکەوێت، لە مێنیوی براوزەرەکە Install app یان Add to Home screen هەڵبژێرە.");
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
 
 buildCities(); render();
 </script>
