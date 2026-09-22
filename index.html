@@ -220,6 +220,8 @@ select option{color:#132427;background:#fff}
 .action:disabled{opacity:.45;cursor:not-allowed}
 .map-modal{position:fixed;inset:0;background:#e8edef;z-index:4000;display:none}
 .map-modal.show{display:block}
+/* Keep the map zoom buttons from covering map labels */
+.leaflet-top.leaflet-left{left:8px;top:70px}
 #map{position:absolute;inset:0}
 .map-head{
   position:absolute;z-index:500;top:14px;right:14px;left:14px;display:flex;justify-content:space-between;align-items:center;
@@ -832,7 +834,11 @@ const PLACES = [
 
   {name:"Halabja Technical Institute", ku:"پەیمانگای تەکنیکی هەڵەبجە", cat:"institute", city:"halabja",
    lat:35.2064476, lng:45.9659805, area:"Zamaqi, Halabja", web:null, tel:null,
-   progs:["it","business","accounting"]}
+   progs:["it","business","accounting"]},
+
+  {name:"Hawler Computer Institute", ku:"پەیمانگەی کۆمپیوتەری هەولێر", cat:"institute", city:"erbil",
+   lat:36.16862, lng:43.97497, area:"گەڕەکی نەورۆز - بەرامبەر نەخۆشخانەی سەردەم", web:"https://hioc.info/", tel:null,
+   progs:["network","cs","it"]}
 ];
 
 
