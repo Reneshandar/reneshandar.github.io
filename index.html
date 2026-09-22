@@ -265,15 +265,6 @@ select option{color:#132427;background:#fff}
       <div class="field">
         <select id="citySelect" aria-label="پارێزگا / شار"></select>
       </div>
-      <div class="field">
-        <select id="typeSelect" aria-label="جۆری شوێن">
-          <option value="all">هەموو جۆرەکان</option>
-          <option value="public">زانکۆی حکومی</option>
-          <option value="private">زانکۆی ئەهلی</option>
-          <option value="institute">پەیمانگا</option>
-          <option value="dormitory">بەشە ناوخۆیی</option>
-        </select>
-      </div>
     </section>
 
     <div class="search-wrap">
@@ -863,11 +854,9 @@ function matchingPrograms(q){
 }
 function getResults(){
   const q=normalize(query), hits=matchingPrograms(q), hitSet=new Set(hits);
-  const type=document.getElementById("typeSelect").value;
   const list=PLACES.filter(p=>{
     if((p.city||"erbil")!==currentCity) return false;
     if(!active.has(p.cat)) return false;
-    if(type!=="all" && p.cat!==type) return false;
     if(!q) return true;
     return normalize(p.name).includes(q)||normalize(p.ku).includes(q)||normalize(p.area).includes(q)||p.progs.some(x=>hitSet.has(x));
   });
@@ -962,12 +951,10 @@ function drawMarkers(focus){
   document.getElementById("mapTitle").textContent=`نەخشەی ${CITIES[currentCity].ku}`;
 }
 document.getElementById("citySelect").addEventListener("change",e=>{currentCity=e.target.value;render();});
-document.getElementById("typeSelect").addEventListener("change",render);
 document.getElementById("search").addEventListener("input",e=>{query=e.target.value;render();});
 document.getElementById("clear").addEventListener("click",()=>{query="";document.getElementById("search").value="";render();});
 document.getElementById("reset").addEventListener("click",()=>{
-  query=""; document.getElementById("search").value=""; document.getElementById("typeSelect").value="all";
-  active=new Set(["public","private","institute","dormitory"]);
+  query=""; document.getElementById("search").value="";  active=new Set(["public","private","institute","dormitory"]);
   document.querySelectorAll(".chip").forEach(x=>x.classList.add("active")); render();
 });
 document.getElementById("filters").addEventListener("click",e=>{
